@@ -1,15 +1,15 @@
 import 'dart:developer';
+import 'package:chat_app/screens/chat_screen/logic/chat_controller.dart';
+import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
 import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/components/message_item/message_item.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/message_model.dart';
-import '../../shared/load_emojies.dart';
-
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends StatelessWidget {
   ChatScreen(
       {super.key,
       required this.name,
@@ -20,119 +20,85 @@ class ChatScreen extends StatefulWidget {
   final DateTime lastSeen;
   final String image;
 
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
+  //List<Widget> messages = [];
 
-class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  List<Widget> messages = [];
-
-  //List<Widget> messageAnimation = [];
-  final ScrollController _scrollController = ScrollController();
-
-  void _sendMessage(TextEditingController c) {
-    final message = c.text;
-    if (message.isEmpty) return;
-
-    final animationController = AnimationController(
-      duration: const Duration(milliseconds: 350),
-      vsync: this,
-    );
-    final animation = CurvedAnimation(
-      parent: animationController,
-      curve: Curves.easeOut,
-    );
-    setState(() {
-      messages.add(
-        MessageItem(
-          isMe: true,
-          messageTime: DateFormat('yy-MM-dd hh:mm').format(DateTime.now()),
-          message: message,
-          animation: animation,
-        ),
-      );
-      animationController.forward();
-
-      // final maxScroll = _scrollController.position.maxScrollExtent;
-      // log(maxScroll.toString());
-      // _scrollController.animateTo(maxScroll,
-      //     duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  final chatController = Get.put<ChatController>(ChatController())
+    ..getChatById(chatId: Get.arguments);
 
   @override
   Widget build(BuildContext context) {
-    var t = TextEditingController();
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ProfileImage(
-              image: widget.image,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.name),
-                Text(
-                  DateFormat('hh:mm').format(widget.lastSeen),
-                  style: const TextStyle(fontSize: 13),
-                ),
-              ],
-            )
+    return Obx(() {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          leading: IconButton(
+            onPressed: () {
+              Get.offNamed('/home');
+              Get.find<HomeController>().getAllChatsOfCurrentUser();
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ProfileImage(
+                image: image,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name),
+                  Text(
+                    DateFormat('hh:mm').format(lastSeen),
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ],
+              )
+            ],
+          ),
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.videocam)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.more_vert_outlined)),
           ],
         ),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.videocam)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.call)),
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.more_vert_outlined)),
-        ],
-      ),
-      body: Column(children: [
-        Expanded(
-          child: ListView.separated(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) => messages[index],
-              separatorBuilder: (context, index) => const SizedBox(
-                    height: 5,
-                  ),
-              itemCount: messages.length),
-        ),
-        SendingSection(
-          textEditingController: t,
-          onPressed: () {
-            _sendMessage(t);
-          },
-        ),
-      ]),
-    );
+        body: chatController.state.value != 'loading'
+            ? Column(
+                //mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                    Expanded(
+                      child: Obx(() {
+                        return ListView.separated(
+                            controller: chatController.scrollController,
+                            physics: const BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) =>
+                                chatController.messages[index],
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                            itemCount: chatController.messages.length);
+                      }),
+                    ),
+                    SendingSection(
+                      textEditingController:
+                          chatController.messageTextController.value,
+                      onPressed: () {
+                        chatController.sendMessage(
+                            chatId: Get.arguments,
+                            message: chatController
+                                .messageTextController.value.text);
+                      },
+                    ),
+                  ])
+            : const Center(child: CircularProgressIndicator()),
+      );
+    });
   }
 }
 
@@ -179,15 +145,15 @@ class _SendingSectionState extends State<SendingSection> {
               children: [
                 Expanded(
                   child: ValidatedTextField(
-                    onTap: (){
-                      if(_shoeEmojiPicker){
-                        setState(() {
-                          _shoeEmojiPicker = !_shoeEmojiPicker;
-                        });
-                      }
-                    },
+                      onTap: () {
+                        if (_shoeEmojiPicker) {
+                          setState(() {
+                            _shoeEmojiPicker = !_shoeEmojiPicker;
+                          });
+                        }
+                      },
                       onEmojiIconPressed: () {
-                      FocusScope.of(context).unfocus();
+                        FocusScope.of(context).unfocus();
                         setState(() {
                           _shoeEmojiPicker = !_shoeEmojiPicker;
                         });
@@ -216,7 +182,7 @@ class _SendingSectionState extends State<SendingSection> {
                     widget.textEditingController.text += emoji.emoji;
                     log(emoji.emoji);
                   },
-                  config: Config(
+                  config: const Config(
                     height: 256,
                     //emojiSet: _emojis,
                     checkPlatformCompatibility: true,

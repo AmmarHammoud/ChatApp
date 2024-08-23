@@ -8,12 +8,14 @@ class MessageItem extends StatelessWidget {
       required this.isMe,
       required this.message,
       required this.messageTime,
-      required this.animation});
+      required this.animation,
+      this.doAnimation = false});
 
   final bool isMe;
   final String message;
   final String messageTime;
   final Animation<double> animation;
+  final bool doAnimation;
 
   @override
   Widget build(BuildContext context) {
@@ -25,24 +27,26 @@ class MessageItem extends StatelessWidget {
         position: Tween<Offset>(
           // begin: const Offset(1, 0),
           // end: const Offset(0, 0),
-          begin: Offset(0, screenHeight*0.005),
+          begin: doAnimation
+              ? Offset(0, screenHeight * 0.005)
+              : const Offset(0, 0),
           end: const Offset(0, 0),
         ).animate(animation),
         child: Container(
           decoration: BoxDecoration(
             color: isMe ? Colors.green[800] : Colors.grey[700],
-            borderRadius:
-                isMe
-                    ? const BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
-                      )
-                    : const BorderRadius.only(
-                        topRight: Radius.circular(15),
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
-                      ),
+            borderRadius: isMe
+                ? const BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    bottomLeft: Radius.circular(15),
+                    //bottomRight: Radius.circular(15),
+                    topRight: Radius.circular(15),
+                  )
+                : const BorderRadius.only(
+                    topRight: Radius.circular(15),
+                    bottomLeft: Radius.circular(15),
+                    bottomRight: Radius.circular(15),
+                  ),
           ),
           margin: isMe
               ? EdgeInsets.only(

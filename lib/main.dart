@@ -1,9 +1,17 @@
 import 'package:chat_app/screens/chat_screen/chat_screen.dart';
 import 'package:chat_app/screens/home_screen/home_screen.dart';
 import 'package:chat_app/screens/login_screen/login_screen.dart';
+import 'package:chat_app/shared/cash_helper.dart';
+import 'package:chat_app/shared/dio_helper/dio_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  DioHelper.init();
+  await CashHelper.init();
+  //CashHelper.logoutUser();
   runApp(const MyApp());
 }
 
@@ -13,7 +21,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialRoute: CashHelper.getUserToken() == null ? '/login' : '/home',
+      getPages: [
+        GetPage(
+          name: '/login',
+          page: () => LoginScreen(),
+        ),
+        GetPage(
+          name: '/home',
+          page: () => HomeScreen(),
+        ),
+        // GetPage(
+        //   name: '/chat',
+        //   page: () => ChatScreen(name: name, lastSeen: lastSeen, image: image),
+        // ),
+      ],
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(

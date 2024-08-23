@@ -6,11 +6,13 @@ class NameAndLastMessage extends StatelessWidget {
       {super.key,
       required this.name,
       required this.messageStatus,
+      required this.isMe,
       required this.lastMessage});
 
   final String name;
   final MessageStatus messageStatus;
   final String lastMessage;
+  final bool isMe;
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +23,27 @@ class NameAndLastMessage extends StatelessWidget {
         Text(name),
         Row(
           children: [
-            Icon(
-              messageStatus == MessageStatus.sent
-                  ? Icons.done
-                  : messageStatus == MessageStatus.delivered
-                      ? Icons.done_all
-                      : Icons.watch_later_outlined,
-              color: messageStatus == MessageStatus.seen
-                  ? Colors.blue
-                  : Colors.grey,
-              size: 16,
+            if (isMe)
+              Icon(
+                messageStatus == MessageStatus.sent
+                    ? Icons.done
+                    : messageStatus == MessageStatus.delivered
+                        ? Icons.done_all
+                        : Icons.watch_later_outlined,
+                color: messageStatus == MessageStatus.seen
+                    ? Colors.blue
+                    : Colors.grey,
+                size: 16,
+              ),
+            const SizedBox(
+              width: 2,
             ),
-            const SizedBox(width: 2,),
-            Text(lastMessage),
+            Text(
+              lastMessage,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              softWrap: false,
+            ),
           ],
         ),
       ],
