@@ -8,7 +8,7 @@ class DioHelper {
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://8f97-178-52-84-205.ngrok-free.app/api/',
+        baseUrl: 'https://fb18-178-52-76-85.ngrok-free.app/api/',
         receiveDataWhenStatusError: true,
         //responseType: ResponseType.plain,
       ),
