@@ -1,8 +1,9 @@
 import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
 import 'package:chat_app/shared/cash_helper.dart';
-import 'package:chat_app/shared/constants.dart';
+import 'package:chat_app/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../shared/components/chat_item/chat_item.dart';
 
@@ -41,6 +42,7 @@ class HomeScreen extends StatelessWidget {
                 child: Obx(() {
                   return ListView.separated(
                       itemBuilder: (context, index) => ChatItem(
+                        //image: CashHelper.getUserId()! == 7 ? 'assets/images/superman.png' : 'assets/images/batman.png',
                           chatId: homeController.chats[index].chatId,
                           isMe: homeController.chats[index].lastMessage?.isMe ??
                               false,
@@ -49,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                                   .chats[index].lastMessage?.message ??
                               '',
                           messageStatus: MessageStatus.seen,
-                          lastSeen: DateTime.now()),
+                          lastSeen: DateFormat('yy-MM-dd hh:mm').format(DateTime.now())),
                       separatorBuilder: (context, index) => const SizedBox(
                             height: 5,
                           ),

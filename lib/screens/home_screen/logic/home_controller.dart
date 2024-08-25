@@ -30,19 +30,19 @@ class HomeController extends GetxController {
     DioHelper.getAllChatsOfCurrentUser(
             token: CashHelper.getUserToken()!, userId: userId)
         .then((value) {
-      //log(value.data['data']['participants'].toString());
+      //log(value.data.toString());
       for (int i = 0; i < value.data['data']['participants'].length; i++) {
         if (value.data['data']['participants'][i]['user']['id'] == userId) {
           continue;
         }
         chats.add(ChatModel.fromJson(value.data['data']['participants'][i]));
-        chats.elementAtOrNull(chats.length - 1)!.lastMessage =
+        chats.elementAt(chats.length - 1).lastMessage =
             MessageModel.fromJson(value.data['data']['last_message']);
       }
       log(chats.toString());
       state('success');
     }).onError((error, h) {
-      log('error getting chats of current user ${error.toString()}');
+      log('error getting chats of current user ${error.toString()}\n ${h.toString()}');
       state('error');
     });
   }

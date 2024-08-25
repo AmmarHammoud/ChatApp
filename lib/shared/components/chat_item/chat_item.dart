@@ -4,11 +4,10 @@ import 'package:chat_app/screens/chat_screen/chat_screen.dart';
 import 'package:chat_app/shared/components/chat_item/last_seen.dart';
 import 'package:chat_app/shared/components/chat_item/name_and_last_message.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
-import 'package:chat_app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../constants.dart';
+import '../../constants/constants.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem(
@@ -18,15 +17,15 @@ class ChatItem extends StatelessWidget {
       required this.messageStatus,
       required this.isMe,
       required this.lastSeen,
-      required this.chatId});
+      required this.chatId, this.image = 'assets/images/batman.png'});
 
   final String name;
   final String lastMessage;
   final MessageStatus messageStatus;
   final bool isMe;
-  final DateTime lastSeen;
+  final String lastSeen;
   final int chatId;
-
+  final String image;
   @override
   Widget build(BuildContext context) {
     return InkWell(

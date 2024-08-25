@@ -3,7 +3,6 @@ import 'package:chat_app/screens/chat_screen/logic/chat_controller.dart';
 import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
 import 'package:chat_app/shared/components/components.dart';
-import 'package:chat_app/shared/components/message_item/message_item.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,7 @@ class ChatScreen extends StatelessWidget {
       required this.image});
 
   final String name;
-  final DateTime lastSeen;
+  final String lastSeen;
   final String image;
 
   //List<Widget> messages = [];
@@ -30,6 +29,7 @@ class ChatScreen extends StatelessWidget {
     return Obx(() {
       return Scaffold(
         appBar: AppBar(
+          titleSpacing: 0,
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
@@ -47,15 +47,18 @@ class ChatScreen extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name),
-                  Text(
-                    DateFormat('hh:mm').format(lastSeen),
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name),
+                    Text(
+                      lastSeen,
+                      style: const TextStyle(fontSize: 13),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               )
             ],
           ),

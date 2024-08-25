@@ -1,5 +1,6 @@
-import 'package:dio/dio.dart';
+import 'dart:developer';
 
+import 'package:dio/dio.dart';
 
 class DioHelper {
   static late Dio dio;
@@ -7,8 +8,9 @@ class DioHelper {
   static init() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://db2e-178-52-248-195.ngrok-free.app/api/',
+        baseUrl: 'https://8f97-178-52-84-205.ngrok-free.app/api/',
         receiveDataWhenStatusError: true,
+        //responseType: ResponseType.plain,
       ),
     );
   }
@@ -49,8 +51,18 @@ class DioHelper {
 
   static Future<Response> getAllChatsOfCurrentUser(
       {required String token, required int userId}) async {
-    return await dio.get('user/$userId/chat',
-        options: Options(headers: {'Authorization': 'Bearer $token'}));
+    return await dio.get(
+      'user/$userId/chat',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return true;
+          }),
+    );
   }
 
   static Future<Response> getChatById(
@@ -60,7 +72,7 @@ class DioHelper {
       data: {'chat_id': chatId, 'page': page},
       options: Options(
           headers: {
-            'Accept': 'application/json',
+            //'Accept': 'application/json',
             'Authorization': 'Bearer $token'
           },
           followRedirects: false,
@@ -86,6 +98,33 @@ class DioHelper {
           validateStatus: (status) {
             return true;
           }),
+    );
+  }
+
+  static Future<Response> broadcast(
+      {required String token,
+      required String socketId,
+      required String channelName}) async {
+    // var formData = FormData.fromMap({
+    //   'socket_id': socketId,
+    //   'channel_name': channelName,
+    // });
+    log('in dio broadcast: $socketId, $channelName');
+    return await dio.post(
+      'broadcasting/auth',
+      //data: formData,
+      data: {'socket_id': socketId, 'channel_name': channelName},
+      options: Options(
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        followRedirects: false,
+        //responseType: ResponseType.plain,
+        validateStatus: (status) {
+          return true;
+        },
+      ),
     );
   }
 }

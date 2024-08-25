@@ -1,16 +1,15 @@
-import 'package:chat_app/screens/chat_screen/chat_screen.dart';
 import 'package:chat_app/screens/home_screen/home_screen.dart';
 import 'package:chat_app/screens/login_screen/login_screen.dart';
 import 'package:chat_app/shared/cash_helper.dart';
 import 'package:chat_app/shared/dio_helper/dio_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   DioHelper.init();
   await CashHelper.init();
+  //Pusher.init();
   //CashHelper.logoutUser();
   runApp(const MyApp());
 }

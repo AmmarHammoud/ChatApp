@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../models/emoji_model.dart';
 
 Category _findBestCategory(String c) {
   for (var x in Category.values) {

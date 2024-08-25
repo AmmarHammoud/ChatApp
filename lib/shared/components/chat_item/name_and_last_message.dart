@@ -1,4 +1,4 @@
-import 'package:chat_app/shared/constants.dart';
+import 'package:chat_app/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class NameAndLastMessage extends StatelessWidget {

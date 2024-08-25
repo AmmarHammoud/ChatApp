@@ -1,11 +1,9 @@
 import 'dart:developer';
 
-import 'package:chat_app/models/emoji_model.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../load_emojies.dart';
 
 navigateTo(context, Widget widget) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
@@ -37,7 +35,7 @@ class ValidatedTextField extends StatefulWidget {
   final Function()? onTap;
 
   const ValidatedTextField(
-      {Key? key,
+      {super.key,
       required this.controller,
       this.validator,
       required this.errorText,
@@ -52,17 +50,16 @@ class ValidatedTextField extends StatefulWidget {
       this.suffixIcon,
       this.obscureText = false,
       this.fontSize = 20.0,
-      this.radius = 15.0})
-      : super(key: key);
+      this.radius = 15.0});
 
   @override
   State<ValidatedTextField> createState() => _ValidatedTextFieldState();
 }
 
 class _ValidatedTextFieldState extends State<ValidatedTextField> {
-  bool _showEmojiPicker = false;
+  final bool _showEmojiPicker = false;
 
-  List<CategoryEmoji> _emojis = [];
+  final List<CategoryEmoji> _emojis = [];
   late TextStyle _textStyle;
   late TextEditingController _controller;
 
@@ -164,7 +161,7 @@ class MyEmojiPicker extends StatelessWidget {
             height: 24,
           );
         },
-        config: Config(
+        config: const Config(
           height: 256,
           //emojiSet: _emojis,
           checkPlatformCompatibility: true,

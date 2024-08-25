@@ -17,7 +17,6 @@ class LoginController extends GetxController {
     //log('email: $email, password: $password');
     state('loading');
     DioHelper.login(email: email, password: password).then((value) {
-      log(value.data.toString());
       UserModel userModel = UserModel.fromJson(value.data['data']['user']);
       state('success');
 

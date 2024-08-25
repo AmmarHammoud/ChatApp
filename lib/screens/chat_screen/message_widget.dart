@@ -6,11 +6,11 @@ class MessageWidget extends StatelessWidget {
   final Animation<double> animation;
 
   const MessageWidget({
-    Key? key,
+    super.key,
     required this.message,
     //required this.animationController,
     required this.animation,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
