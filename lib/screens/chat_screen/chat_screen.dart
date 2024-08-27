@@ -3,8 +3,10 @@ import 'package:chat_app/screens/chat_screen/logic/chat_controller.dart';
 import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
 import 'package:chat_app/shared/components/components.dart';
+import 'package:chat_app/shared/components/message_item/message_item.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +28,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Obx(() {
       return Scaffold(
         appBar: AppBar(
@@ -44,8 +47,8 @@ class ChatScreen extends StatelessWidget {
               ProfileImage(
                 image: image,
               ),
-              const SizedBox(
-                width: 5,
+              SizedBox(
+                width: screenHeight * 0.007,
               ),
               Expanded(
                 child: Column(
@@ -69,37 +72,40 @@ class ChatScreen extends StatelessWidget {
                 onPressed: () {}, icon: const Icon(Icons.more_vert_outlined)),
           ],
         ),
-        body: chatController.state.value != 'loading'
-            ? Column(
-                //mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                    Expanded(
-                      child: Obx(() {
-                        return ListView.separated(
-                            controller: chatController.scrollController,
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) =>
-                                chatController.messages[index],
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                            itemCount: chatController.messages.length);
-                      }),
-                    ),
-                    SendingSection(
-                      textEditingController:
-                          chatController.messageTextController.value,
-                      onPressed: () {
-                        chatController.sendMessage(
-                            chatId: Get.arguments,
-                            message: chatController
-                                .messageTextController.value.text);
-                      },
-                    ),
-                  ])
-            : const Center(child: CircularProgressIndicator()),
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: chatController.state.value != 'loading'
+              ? Column(
+            //mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Obx(() {
+                    //log('build list view ===================================================');
+                    return ListView.separated(
+                        controller: chatController.scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) => chatController.messages[index],
+                        separatorBuilder: (context, index) =>
+                            SizedBox(
+                              height: screenHeight * 0.007,
+                            ),
+                        itemCount: chatController.messages.length);
+                  }),
+                ),
+                SendingSection(
+                  textEditingController:
+                  chatController.messageTextController.value,
+                  onPressed: () {
+                    chatController.sendMessage(
+                        chatId: Get.arguments,
+                        message: chatController
+                            .messageTextController.value.text);
+                  },
+                ),
+              ])
+              : const Center(child: CircularProgressIndicator()),
+        ),
       );
     });
   }

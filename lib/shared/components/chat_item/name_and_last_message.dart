@@ -18,31 +18,22 @@ class NameAndLastMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      //mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(name),
         Row(
           children: [
             if (isMe)
-              Icon(
-                messageStatus == MessageStatus.sent
-                    ? Icons.done
-                    : messageStatus == MessageStatus.delivered
-                        ? Icons.done_all
-                        : Icons.watch_later_outlined,
-                color: messageStatus == MessageStatus.seen
-                    ? Colors.blue
-                    : Colors.grey,
-                size: 16,
-              ),
+              messageStateIcon(messageStatus: messageStatus),
             const SizedBox(
               width: 2,
             ),
-            Text(
-              lastMessage,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              softWrap: false,
+            Expanded(
+              child: Text(
+                lastMessage,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                softWrap: false,
+              ),
             ),
           ],
         ),

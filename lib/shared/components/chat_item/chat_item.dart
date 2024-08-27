@@ -42,27 +42,31 @@ class ChatItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Container(color: Colors.red, width: 100,),
-          Row(
-            //mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                child: const ProfileImage(
-                  image: 'assets/images/batman.png',
+          Expanded(
+            child: Row(
+              //mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  child: const ProfileImage(
+                    image: 'assets/images/batman.png',
+                  ),
+                  onTap: () {
+                    log('image');
+                  },
                 ),
-                onTap: () {
-                  log('image');
-                },
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              NameAndLastMessage(
-                  name: name,
-                  isMe: isMe,
-                  messageStatus: messageStatus,
-                  lastMessage: lastMessage)
-            ],
+                const SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  child: NameAndLastMessage(
+                      name: name,
+                      isMe: isMe,
+                      messageStatus: messageStatus,
+                      lastMessage: lastMessage),
+                )
+              ],
+            ),
           ),
           LastSeen(lastSeen: lastSeen)
         ],
