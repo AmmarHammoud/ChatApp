@@ -19,11 +19,14 @@ class NameAndLastMessage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(name),
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         Row(
           children: [
-            if (isMe)
-              messageStateIcon(messageStatus: messageStatus),
+            if (isMe) messageStateIcon(messageStatus: messageStatus),
             const SizedBox(
               width: 2,
             ),

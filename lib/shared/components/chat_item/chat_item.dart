@@ -4,6 +4,7 @@ import 'package:chat_app/screens/chat_screen/chat_screen.dart';
 import 'package:chat_app/shared/components/chat_item/last_seen.dart';
 import 'package:chat_app/shared/components/chat_item/name_and_last_message.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
+import 'package:chat_app/shared/constants/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +18,8 @@ class ChatItem extends StatelessWidget {
       required this.messageStatus,
       required this.isMe,
       required this.lastSeen,
-      required this.chatId, this.image = 'assets/images/batman.png'});
+      required this.chatId,
+      this.image = 'assets/images/batman.png'});
 
   final String name;
   final String lastMessage;
@@ -26,16 +28,18 @@ class ChatItem extends StatelessWidget {
   final String lastSeen;
   final int chatId;
   final String image;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.to(
-            () => ChatScreen(
-                name: name,
-                lastSeen: lastSeen,
-                image: 'assets/images/batman.png'),
-            arguments: chatId);
+        // Get.to(
+        //     () => ChatScreen(
+        //         name: name,
+        //         lastSeen: lastSeen,
+        //         image: 'assets/images/batman.png'),
+        //     arguments: chatId);
+        Get.toNamed(AppRoutes.chatScreen, arguments: chatId);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

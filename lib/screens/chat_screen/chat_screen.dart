@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:chat_app/screens/chat_screen/logic/chat_controller.dart';
+import 'package:chat_app/screens/chat_screen/logic/chat_screen_states.dart';
 import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
 import 'package:chat_app/shared/components/chat_item/profile_image.dart';
 import 'package:chat_app/shared/components/components.dart';
@@ -11,11 +12,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatelessWidget {
-  ChatScreen(
-      {super.key,
-      required this.name,
-      required this.lastSeen,
-      required this.image});
+  ChatScreen({
+    super.key,
+    required this.name,
+    required this.lastSeen,
+    required this.image,
+  });
 
   final String name;
   final String lastSeen;
@@ -36,8 +38,8 @@ class ChatScreen extends StatelessWidget {
           centerTitle: false,
           leading: IconButton(
             onPressed: () {
-              Get.offNamed('/home');
-              Get.find<HomeController>().getAllChatsOfCurrentUser();
+              // Get.offNamed('/home');
+              // Get.find<HomeController>().getAllChatsOfCurrentUser();
             },
             icon: const Icon(Icons.arrow_back),
           ),
@@ -74,37 +76,39 @@ class ChatScreen extends StatelessWidget {
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: chatController.state.value != 'loading'
-              ? Column(
-            //mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Obx(() {
-                    //log('build list view ===================================================');
-                    return ListView.separated(
-                        controller: chatController.scrollController,
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) => chatController.messages[index],
-                        separatorBuilder: (context, index) =>
-                            SizedBox(
-                              height: screenHeight * 0.007,
-                            ),
-                        itemCount: chatController.messages.length);
-                  }),
-                ),
-                SendingSection(
-                  textEditingController:
-                  chatController.messageTextController.value,
-                  onPressed: () {
-                    chatController.sendMessage(
-                        chatId: Get.arguments,
-                        message: chatController
-                            .messageTextController.value.text);
-                  },
-                ),
-              ])
-              : const Center(child: CircularProgressIndicator()),
+          child:
+          // chatController.state.value is! ChatScreenLoadingState
+              // ?
+          Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                      Expanded(
+                        child: Obx(() {
+                          //log('build list view ===================================================');
+                          return ListView.separated(
+                              controller: chatController.scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) =>
+                                  chatController.messages[index],
+                              separatorBuilder: (context, index) => SizedBox(
+                                    height: screenHeight * 0.007,
+                                  ),
+                              itemCount: chatController.messages.length);
+                        }),
+                      ),
+                      SendingSection(
+                        textEditingController:
+                            chatController.messageTextController.value,
+                        onPressed: () {
+                          chatController.sendMessage(
+                              chatId: Get.arguments,
+                              message: chatController
+                                  .messageTextController.value.text);
+                        },
+                      ),
+                    ])
+              // : const Center(child: CircularProgressIndicator()),
         ),
       );
     });

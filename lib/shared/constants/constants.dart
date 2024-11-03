@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../components/my_icon.dart';
 
-enum MessageStatus { sending, sent, delivered, seen }
+enum MessageStatus {
+  sending,
+  sent,
+  delivered,
+  seen,
+}
 
 Icon messageStateIcon(
     {required MessageStatus messageStatus,

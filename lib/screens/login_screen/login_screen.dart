@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:chat_app/screens/login_screen/logic/login_controller.dart';
+import 'package:chat_app/screens/login_screen/logic/login_screen_states.dart';
 import 'package:chat_app/shared/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +9,7 @@ import 'package:get/get.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  var loginController = Get.put(LoginController());
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +24,25 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           children: [
             ValidatedTextField(
-              icon: Icons.person,
-              controller: loginController.userNameController.value,
-              errorText: 'errorText',
-              hintText: 'user name',
+              // validator:
+              //     loginController.userTextValidators.value.emailValidator,
+              icon: Icons.mail,
+              controller:
+                  loginController.userTextControllers.value.emailController,
+              errorText: 'email cannot be empty',
+              hintText: 'email',
               onChanged: (x) {},
             ),
             SizedBox(
               height: screenHeight * 0.02,
             ),
             ValidatedTextField(
+              // validator:
+              //     loginController.userTextValidators.value.passwordValidator,
               icon: Icons.key,
-              controller: loginController.passwordController.value,
-              errorText: 'errorText',
+              controller:
+                  loginController.userTextControllers.value.passwordController,
+              errorText: 'password cannot be empty',
               hintText: 'password',
               onChanged: (x) {},
             ),
@@ -41,31 +50,31 @@ class LoginScreen extends StatelessWidget {
               height: screenHeight * 0.02,
             ),
             Obx(() {
-              if (loginController.state.value == 'loading') {
+              if (loginController.state.value is LoginScreenLoadingState) {
                 return const CircularProgressIndicator();
               }
-              if (loginController.state.value != 'loading') {
-                return ElevatedButton(
-                  onPressed: () {
-                    loginController.login(
-                      context: context,
-                        email: loginController.userNameController.value.text,
-                        password: loginController.passwordController.value.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    minimumSize: Size(screenWidth * 0.3, screenHeight * 0.07),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+              return ElevatedButton(
+                onPressed: () {
+                  loginController.login(
+                    context: context,
+                    email: loginController
+                        .userTextControllers.value.emailController.value.text,
+                    password: loginController.userTextControllers.value
+                        .passwordController.value.text,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  minimumSize: Size(screenWidth * 0.3, screenHeight * 0.07),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
-              }
-              return Container();
+                ),
+                child: const Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
             })
           ],
         ),

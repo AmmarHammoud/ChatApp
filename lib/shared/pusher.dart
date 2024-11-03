@@ -71,17 +71,17 @@ class Pusher {
     dynamic options,
   ) async {
     log('socket_id=$socketId&channel_name=$channelName');
-    String token = CashHelper.getUserToken()!;
-    log('token in pusher init: $token');
-    DioHelper.broadcast(
-            token: token, socketId: socketId, channelName: channelName)
-        .then((value) {
-      log(value.statusCode.toString());
-      log(value.data.toString());
-      return value.data;
-    }).onError((error, h) {
-      log('error in onAuth m: ${error.toString()}');
-    });
+    // String token = CashHelper.getUserToken()!;
+    // log('token in pusher init: $token');
+    // DioHelper.broadcast(
+    //         token: token, socketId: socketId, channelName: channelName)
+    //     .then((value) {
+    //   log(value.statusCode.toString());
+    //   log(value.data.toString());
+    //   return value.data;
+    // }).onError((error, h) {
+    //   log('error in onAuth m: ${error.toString()}');
+    // });
   }
 
   void unsubscribeAndClose({String channelName = 'chat', required int roomId}) {

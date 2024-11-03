@@ -1,39 +1,30 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
+
+import '../models/user_model.dart';
 
 class CashHelper {
-  static late SharedPreferences sharedPreferences;
+  static late GetStorage _storage;
 
-  static init() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-  }
-
-  static Future<bool> putString({required key, required value})async{
-    return await sharedPreferences.setString(key, value);
+  static init() {
+    _storage = GetStorage();
   }
 
-  static String? getString({required String key}) {
-    return sharedPreferences.getString(key);
+  static const String _token = 'token';
+  static const String _user = 'user';
+
+  static saveUserToken({required String token}) {
+    _storage.write(_token, token);
   }
 
-  static Future<bool> putUser({required String userToken})async{
-    bool putUserToken = await sharedPreferences.setString('token', userToken);
-    return putUserToken;
-  }
-  static Future<bool> putUserEmail({required String email}) async{
-    return await sharedPreferences.setString('email', email);
+  static String? getUserToken() {
+    return _storage.read(_token);
   }
 
-  static String? getUserToken(){
-    return sharedPreferences.getString('token');
+  static saveUser({required UserModel user}) {
+    _storage.write(_user, user.toJson());
   }
 
-  static Future<bool> putUserId({required int id}) async{
-    return await sharedPreferences.setInt('id', id);
-  }
-  static int? getUserId(){
-    return sharedPreferences.getInt('id');
-  }
-  static logoutUser(){
-    sharedPreferences.clear();
+  static getUser() {
+    return _storage.read(_user);
   }
 }

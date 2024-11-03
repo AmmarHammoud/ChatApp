@@ -1,30 +1,37 @@
 import 'dart:developer';
 
+import 'package:chat_app/shared/dio_helper/end_points.dart';
 import 'package:dio/dio.dart';
 
 class DioHelper {
   static late Dio dio;
 
-  static init() {
+  //192.168.238.17
+  static init({bool emulator = false}) {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:8000/api/',
+        baseUrl: 'http://${emulator ? '10.0.2.2' : '192.168.238.17'}:8000/api/',
+        headers: {'Accept': 'application/json'},
         receiveDataWhenStatusError: true,
-        //responseType: ResponseType.plain,
+        followRedirects: false,
+        validateStatus: (status) {
+          return true;
+        },
       ),
     );
   }
 
-  static Future<Response> register(
-      {required String name,
-      required String password,
-      required String passwordConfirmation}) async {
+  static Future<Response> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     return await dio.post(
-      'auth/register',
+      EndPoints.register,
       data: {
-        'username': name,
+        'name': name,
+        'email': email,
         'password': password,
-        'password_confirmation': passwordConfirmation,
       },
     );
   }
@@ -32,72 +39,54 @@ class DioHelper {
   static Future<Response> login(
       {required String email, required String password}) async {
     return await dio.post(
-      'auth/login',
+      EndPoints.login,
       data: {'email': email, 'password': password},
-      options: Options(
-          headers: {'Accept': 'application/json'},
-          followRedirects: false,
-          validateStatus: (status) {
-            return true;
-          }),
     );
   }
 
   static Future<Response> logout() async {
     return await dio.get(
-      'logout',
+      EndPoints.logout,
     );
   }
 
   static Future<Response> getAllChatsOfCurrentUser(
-      {required String token, required int userId}) async {
+      {required String token}) async {
     return await dio.get(
-      'user/$userId/chat',
+      EndPoints.getUserConversation,
       options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-          followRedirects: false,
-          validateStatus: (status) {
-            return true;
-          }),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
     );
   }
 
-  static Future<Response> getChatById(
-      {required int chatId, required int page, required String token}) async {
+  static Future<Response> getChatById({
+    required int chatId,
+    required String token,
+    int offset = 0,
+  }) async {
     return await dio.get(
-      'chat_message',
-      data: {'chat_id': chatId, 'page': page},
+      '${EndPoints.getChatMessages}/$chatId',
+      data: {'offset': offset},
       options: Options(
-          headers: {
-            //'Accept': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
-          followRedirects: false,
-          validateStatus: (status) {
-            return true;
-          }),
+        headers: {'Authorization': 'Bearer $token'},
+      ),
     );
   }
 
-  static Future<Response> sendMessage(
-      {required int chatId,
-      required String message,
-      required String token}) async {
+  static Future<Response> sendMessage({
+    required int chatId,
+    required String message,
+    required String token,
+  }) async {
     return await dio.post(
-      'chat_message',
-      data: {'chat_id': chatId, 'message': message},
+      EndPoints.sendMessage,
+      data: {'conversation_id': chatId, 'message': message},
       options: Options(
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
-          followRedirects: false,
-          validateStatus: (status) {
-            return true;
-          }),
+        headers: {'Authorization': 'Bearer $token'},
+      ),
     );
   }
 
@@ -116,13 +105,7 @@ class DioHelper {
       data: {'socket_id': socketId, 'channel_name': channelName},
       options: Options(
         headers: {
-          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
-        },
-        followRedirects: false,
-        //responseType: ResponseType.plain,
-        validateStatus: (status) {
-          return true;
         },
       ),
     );

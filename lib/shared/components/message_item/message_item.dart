@@ -9,19 +9,20 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 class MessageItem extends StatelessWidget {
-  MessageItem(
-      {super.key,
-      required this.messageModel,
-      required this.animation,
-      this.triggerSendingAnimation = false,
-      this.messageStatus = MessageStatus.sending,
-      this.onTap,
-      this.onDoubleTap});
+  MessageItem({
+    super.key,
+    required this.messageModel,
+    required this.animation,
+    this.triggerSendingAnimation = false,
+    // this.messageStatus = MessageStatus.sending,
+    this.onTap,
+    this.onDoubleTap,
+  });
 
-  final MessageModel messageModel;
+  MessageModel messageModel;
   Animation<double> animation;
   final bool triggerSendingAnimation;
-  MessageStatus messageStatus;
+  // MessageStatus messageStatus;
   final Function()? onTap;
   final Function()? onDoubleTap;
 
@@ -43,10 +44,14 @@ class MessageItem extends StatelessWidget {
           end: const Offset(0, 0),
         ).animate(animation),
         child: Align(
-          alignment: messageModel.isMe ? Alignment.centerRight : Alignment.centerLeft,
+          alignment:
+              messageModel.isMe ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
-            constraints: BoxConstraints(minWidth: screenWidth * .19, maxWidth: screenWidth * 0.85),
-            width: messageModel.message.length * screenWidth * 0.017,
+            constraints: BoxConstraints(
+              minWidth: screenWidth * .21,
+              maxWidth: screenWidth * 0.75,
+            ),
+            width: messageModel.message.length * screenWidth * 0.03,
             decoration: BoxDecoration(
               color: messageModel.isMe ? Colors.green[800] : Colors.grey[700],
               borderRadius: messageModel.isMe
@@ -67,13 +72,13 @@ class MessageItem extends StatelessWidget {
             //     : EdgeInsets.only(
             //         left: 0.05 * screenWidth, right: 0.25 * screenWidth),
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(9.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     messageModel.message,
-                    textAlign: TextAlign.right,
+                    textAlign: TextAlign.left,
                     style: const TextStyle(color: Colors.white),
                     //overflow: TextOverflow.ellipsis,
                   ),
@@ -88,8 +93,9 @@ class MessageItem extends StatelessWidget {
                       SizedBox(
                         width: screenWidth * 0.01,
                       ),
-                      messageStateIcon(
-                          messageStatus: messageStatus, color: Colors.grey[300]!)
+                      if(messageModel.isMe) messageStateIcon(
+                          messageStatus: messageModel.status,
+                          color: Colors.grey[300]!)
                     ],
                   ),
                 ],

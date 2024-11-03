@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:chat_app/models/message_model.dart';
+import 'package:chat_app/screens/chat_screen/logic/chat_screen_states.dart';
 import 'package:chat_app/shared/cash_helper.dart';
 import 'package:chat_app/shared/components/chat_item/chat_item.dart';
 import 'package:chat_app/shared/components/message_item/message_item.dart';
@@ -18,26 +19,24 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import '../../../shared/constants/string_to_json.dart';
 
 class ChatController extends GetxController with GetTickerProviderStateMixin {
-  var state = 'initial'.obs;
+  // var state = 'initial'.obs;
+  late Rx<ChatScreenStates> state;
   Rx<bool> startAnimation = false.obs;
   var messageTextController = TextEditingController().obs;
   RxList<MessageItem> messages = <MessageItem>[].obs;
 
   void getChatById({required int chatId, int page = 1}) {
-    state('loading');
+    state.value = ChatScreenLoadingState();
     messages.clear();
 
-    DioHelper.getChatById(
-            chatId: chatId, page: page, token: CashHelper.getUserToken()!)
+    DioHelper.getChatById(chatId: chatId, token: CashHelper.getUserToken()!)
         .then((value) {
-      //log(value.data.toString());
-      for (int i = value.data['data'].length - 1; i >= 0; i--) {
-        MessageModel messageModel =
-            MessageModel.fromJson(value.data['data'][i]);
+      for (int i = value.data.length - 1; i >= 0; i--) {
+        MessageModel messageModel = MessageModel.fromJson(value.data[i]);
         messages.add(
           MessageItem(
               //index: i,
-              messageStatus: messageModel.messageStatus,
+              // messageStatus: messageModel.status,
               messageModel: messageModel,
               animation: animation.value),
         );
@@ -47,10 +46,10 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
       }
       log(messages.toString());
       moveScrollController();
-      state('success');
+      state.value = ChatScreenSuccessState();
     }).onError((error, h) {
       log('error getting chat by id: ${error.toString()}');
-      state('error');
+      state.value = ChatScreenErrorState(error.toString());
     });
   }
 
@@ -66,6 +65,8 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
 
   @override
   void onInit() async {
+    state = ChatScreenStates().obs;
+
     animationController = AnimationController(
       duration: const Duration(milliseconds: 350),
       vsync: this,
@@ -114,29 +115,24 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     super.onInit();
   }
 
-  void sendMessage({required int chatId, required String message}) {
-    state('loading when send message');
+  void sendMessage({required int chatId, required String message}) async {
     if (message.isEmpty) return;
+
+    state.value = ChatScreenLoadingState();
+
     MessageModel messageModel = MessageModel(
-        message: message,
-        sendAt: DateFormat('hh:mm').format(DateTime.now()),
-        isMe: true);
-    DioHelper.sendMessage(
-            chatId: chatId, message: message, token: CashHelper.getUserToken()!)
-        .then((value) async {
-      log(value.data.toString());
-      messageModel.messageStatus = MessageStatus.sent;
-      log(chatPusher.pusher.channels.toString());
-      state('success');
-    }).onError((error, h) {
-      log('error sending message: ${error.toString()}');
-      state('error');
-    });
+      message: message,
+      sendAt: DateFormat('hh:mm').format(DateTime.now()),
+      isMe: true,
+    );
+
     messageTextController.value.text = '';
+
+    // log('messageModel.status: ${messageModel.status}');
+
     messages.add(
       MessageItem(
         triggerSendingAnimation: true,
-        messageStatus: messageModel.messageStatus,
         messageModel: messageModel,
         animation: animation.value,
       ),
@@ -145,6 +141,44 @@ class ChatController extends GetxController with GetTickerProviderStateMixin {
     animationController.value.forward();
 
     moveScrollController();
+
+    DioHelper.sendMessage(
+      chatId: chatId,
+      message: message,
+      token: CashHelper.getUserToken()!,
+    ).then((value) async {
+      log(value.data.toString());
+
+      // messageModel.status = MessageStatus.sent;
+      messages[messages.length - 1].messageModel.status = MessageStatus.sent;
+      // log('last message in the list: ${messages[messages.length - 1].messageModel.message}');
+      // log('last message in the list: ${messages[messages.length - 1].messageModel.status}');
+
+      messages.refresh();
+      state.value = ChatScreenSuccessState();
+    }).onError((error, h) {
+      log('error sending message: ${error.toString()}');
+      state.value = ChatScreenErrorState(error.toString());
+    });
+
+    // messageTextController.value.text = '';
+    //
+    // // log('messageModel.status: ${messageModel.status}');
+    //
+    // messages.add(
+    //   MessageItem(
+    //     triggerSendingAnimation: true,
+    //     messageModel: messageModel,
+    //     animation: animation.value,
+    //   ),
+    // );
+    //
+    // animationController.value.forward();
+    //
+    // moveScrollController();
+
+    // messages[messages.length - 1].messageModel.status = MessageStatus.sent;
+    // messages.refresh();
   }
 
   void deleteMessage({required MessageItem messageItem}) async {}

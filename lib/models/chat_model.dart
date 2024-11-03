@@ -8,13 +8,13 @@ class ChatModel {
   MessageModel? lastMessage;
 
   ChatModel.fromJson(Map<String, dynamic> json) {
-    chatId = json['chat_id'];
-    user = UserModel.fromJson(json['user']);
+    chatId = json['id'];
+    // user = UserModel.fromJson(json['user']);
     //lastMessage = MessageModel.fromJson(json['last_message']);
   }
 
   @override
   String toString() {
-    return 'chat id: $chatId, user: {$user}\n';
+    return 'chat id: $chatId, user: {user}\n';
   }
 }

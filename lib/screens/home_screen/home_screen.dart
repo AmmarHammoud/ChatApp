@@ -1,4 +1,5 @@
 import 'package:chat_app/screens/home_screen/logic/home_controller.dart';
+import 'package:chat_app/screens/home_screen/logic/home_screen_states.dart';
 import 'package:chat_app/shared/cash_helper.dart';
 import 'package:chat_app/shared/constants/constants.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import '../../shared/components/chat_item/chat_item.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  var homeController =
+  final homeController =
       Get.put<HomeController>(HomeController(), permanent: true);
 
   @override
@@ -18,7 +19,9 @@ class HomeScreen extends StatelessWidget {
     return Obx(() {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('WhatsApp'),
+          // leading: null,
+          automaticallyImplyLeading: false,
+          title: const Text('ChatApp'),
           actions: [
             IconButton(
                 onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined)),
@@ -26,7 +29,7 @@ class HomeScreen extends StatelessWidget {
             IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
           ],
         ),
-        body: homeController.state.value != 'loading'
+        body: homeController.state.value is! HomeScreenLoadingState
             ? Padding(
                 padding: const EdgeInsets.all(10.0),
                 // child: ListView.separated(
@@ -41,17 +44,20 @@ class HomeScreen extends StatelessWidget {
                 //     itemCount: 10),
                 child: Obx(() {
                   return ListView.separated(
+                    physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) => ChatItem(
-                        //image: CashHelper.getUserId()! == 7 ? 'assets/images/superman.png' : 'assets/images/batman.png',
+                          //image: CashHelper.getUserId()! == 7 ? 'assets/images/superman.png' : 'assets/images/batman.png',
                           chatId: homeController.chats[index].chatId,
                           isMe: homeController.chats[index].lastMessage?.isMe ??
                               false,
-                          name: homeController.chats[index].user.userName,
+                          // name: homeController.chats[index].user.userName,
+                          name: 'homeController.chats[index].user.userName',
                           lastMessage: homeController
                                   .chats[index].lastMessage?.message ??
-                              '',
+                              'lastMessage',
                           messageStatus: MessageStatus.seen,
-                          lastSeen: DateFormat('yy-MM-dd hh:mm').format(DateTime.now())),
+                          lastSeen: DateFormat('yy-MM-dd hh:mm')
+                              .format(DateTime.now())),
                       separatorBuilder: (context, index) => const SizedBox(
                             height: 5,
                           ),

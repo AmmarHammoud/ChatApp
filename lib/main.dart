@@ -1,13 +1,16 @@
 import 'package:chat_app/screens/home_screen/home_screen.dart';
 import 'package:chat_app/screens/login_screen/login_screen.dart';
 import 'package:chat_app/shared/cash_helper.dart';
+import 'package:chat_app/shared/constants/app_routes.dart';
 import 'package:chat_app/shared/dio_helper/dio_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioHelper.init();
+  await GetStorage.init();
   await CashHelper.init();
   //Pusher.init();
   //CashHelper.logoutUser();
@@ -21,21 +24,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: CashHelper.getUserToken() == null ? '/login' : '/home',
-      getPages: [
-        GetPage(
-          name: '/login',
-          page: () => LoginScreen(),
-        ),
-        GetPage(
-          name: '/home',
-          page: () => HomeScreen(),
-        ),
-        // GetPage(
-        //   name: '/chat',
-        //   page: () => ChatScreen(name: name, lastSeen: lastSeen, image: image),
-        // ),
-      ],
+      initialRoute: CashHelper.getUserToken() == null
+          ? AppRoutes.loginScreen
+          : AppRoutes.homeScreen,
+      getPages: AppRoutes.routes,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -57,7 +49,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      home: HomeScreen(),
     );
   }
 }
